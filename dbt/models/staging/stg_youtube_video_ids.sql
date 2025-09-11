@@ -1,0 +1,5 @@
+select
+  videoId              as video_id,
+  channelId            as channel_id,
+  date(_partitiontime) as load_date
+from `orbital-nuance-471817-n0.youtube_raw.video_ids_raw`

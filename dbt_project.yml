@@ -1,0 +1,15 @@
+name: "youtube_analytics"
+version: "1.0"
+profile: "youtube_analytics"
+
+# Your model SQL files live here:
+model-paths: ["dbt/models"]
+
+models:
+  youtube_analytics:
+    staging:
+      +schema: youtube_stg
+      +materialized: view
+    marts:
+      +schema: youtube_analytics
+      +materialized: table

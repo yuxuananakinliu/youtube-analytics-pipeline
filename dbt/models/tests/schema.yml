@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: stg_youtube_video_stats
+    tests:
+      - not_null:
+          column_name: video_id
+      - not_null:
+          column_name: load_date
+
+  - name: fct_video_daily_metrics
+    tests:
+      - unique:
+          column_name: "video_id || '-' || cast(load_date as string)"
+      - not_null:
+          column_name: video_id
+      - not_null:
+          column_name: load_date
