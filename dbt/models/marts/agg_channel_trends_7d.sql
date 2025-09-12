@@ -1,3 +1,5 @@
+{{ config(materialized='view') }}
+
 with daily as (
   select
     channel_id,

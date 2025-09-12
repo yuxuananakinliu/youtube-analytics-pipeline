@@ -1,0 +1,26 @@
+{{ config(materialized='view') }}
+
+with ranked as (
+  select
+    channel_id,
+    channel_title,
+    channel_country,
+    channel_published_at,
+    channel_view_count,
+    channel_subscribers,
+    channel_video_count,
+    load_date,
+    row_number() over (partition by channel_id order by load_date desc) as rn
+  from {{ ref('stg_youtube_channels') }}
+)
+select
+  channel_id,
+  channel_title,
+  channel_country,
+  channel_published_at,
+  channel_view_count,
+  channel_subscribers,
+  channel_video_count,
+  load_date as snapshot_date
+from ranked
+where rn = 1

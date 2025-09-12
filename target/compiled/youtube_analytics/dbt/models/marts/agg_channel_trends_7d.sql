@@ -1,3 +1,5 @@
+
+
 with daily as (
   select
     channel_id,

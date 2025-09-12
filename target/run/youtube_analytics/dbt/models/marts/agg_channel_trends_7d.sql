@@ -1,16 +1,10 @@
 
-  
-    
 
-    create or replace table `orbital-nuance-471817-n0`.`youtube_stg_youtube_analytics`.`agg_channel_trends_7d`
-      
-    
-    
+  create or replace view `orbital-nuance-471817-n0`.`youtube_stg_youtube_analytics`.`agg_channel_trends_7d`
+  OPTIONS()
+  as 
 
-    
-    OPTIONS()
-    as (
-      with daily as (
+with daily as (
   select
     channel_id,
     video_id,
@@ -42,6 +36,5 @@ rollup_cte as (
   from daily
 )
 select distinct channel_id, load_date, views_7d, likes_7d, comments_7d
-from rollup_cte
-    );
-  
+from rollup_cte;
+

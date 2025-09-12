@@ -4,8 +4,8 @@ youtube_analytics:
     prod:
       type: bigquery
       method: service-account
-      project: orbital-nuance-471817-n0
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
       dataset: youtube_stg
       location: US
       threads: 4
-      keyfile: "D:\\UC Davis Documents & Works\\Interview Preparation\\self_projects\\youtube-analytics-pipeline\\creds\\gcp_sa.json"
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
