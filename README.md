@@ -45,11 +45,15 @@ dbt.bat / refresh.bat # repo-local runners (no global env needed)
   - `agg_channel_trends_7d`, `dim_channel`, `video_latest_snapshot`
  
 ## Dashboard (*Looker Studio*)
+
+#### Live Dashboard Link: https://lookerstudio.google.com/s/i4UfhnBNXck
+
 #### Connect to BigQuery and add these tables as sources:
 - `fct_video_daily_metrics` (trends)
 - `agg_channel_trends_7d` (7d KPIs)
 - `video_latest_snapshot` (latest per video)
 - `dim_channel` (channel names, metadata)
+
 #### Pages:
 1. **Channel Overview** — scorecards for 7d KPIs + time series (daily_views)
 2. **Top Videos** — table/bar of last 7 days
