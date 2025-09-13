@@ -12,7 +12,7 @@ with ranked as (
     s.duration_seconds,
     s.load_date,
     row_number() over (partition by s.video_id order by s.load_date desc) as rn
-  from `orbital-nuance-471817-n0`.`youtube_stg_youtube_stg`.`stg_youtube_video_stats` s
+  from `orbital-nuance-471817-n0`.`youtube_stg`.`stg_youtube_video_stats` s
 )
 select
   r.video_id,

@@ -4,6 +4,8 @@ profile: "youtube_analytics"
 
 # Your model SQL files live here:
 model-paths: ["dbt/models"]
+macro-paths: ["macros"]
+
 
 models:
   youtube_analytics:

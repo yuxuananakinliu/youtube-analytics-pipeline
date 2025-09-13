@@ -8,7 +8,7 @@ with daily as (
     daily_views,
     daily_likes,
     daily_comments
-  from `orbital-nuance-471817-n0`.`youtube_stg_youtube_analytics`.`fct_video_daily_metrics`
+  from `orbital-nuance-471817-n0`.`youtube_analytics`.`fct_video_daily_metrics`
 ),
 rollup_cte as (
   select

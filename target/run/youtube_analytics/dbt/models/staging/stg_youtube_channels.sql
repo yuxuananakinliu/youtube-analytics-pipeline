@@ -1,6 +1,6 @@
 
 
-  create or replace view `orbital-nuance-471817-n0`.`youtube_stg_youtube_stg`.`stg_youtube_channels`
+  create or replace view `orbital-nuance-471817-n0`.`youtube_stg`.`stg_youtube_channels`
   OPTIONS()
   as with src as (
   select
