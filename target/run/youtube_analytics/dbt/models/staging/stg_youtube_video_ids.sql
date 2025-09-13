@@ -1,6 +1,6 @@
 
 
-  create or replace view `orbital-nuance-471817-n0`.`youtube_stg_youtube_stg`.`stg_youtube_video_ids`
+  create or replace view `orbital-nuance-471817-n0`.`youtube_stg`.`stg_youtube_video_ids`
   OPTIONS()
   as select
   videoId              as video_id,

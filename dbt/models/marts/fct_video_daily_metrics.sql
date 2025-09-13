@@ -5,8 +5,8 @@
     unique_key=['video_id','load_date']
 ) }}
 
--- Pull from the staging model's flattened columns
-with src as (
+-- 1) Read from staging and LIMIT to needed dates on incremental
+with src_raw as (
   select
     video_id,
     channel_id,
@@ -16,12 +16,25 @@ with src as (
     comments
   from {{ ref('stg_youtube_video_stats') }}
   {% if is_incremental() %}
-    -- Reprocess yesterday + today so lag() boundaries stay correct
     where load_date >= (
       select date_sub(coalesce(max(load_date), date '1900-01-01'), interval 1 day)
       from {{ this }}
     )
   {% endif %}
+),
+
+-- 2) Deduplicate: keep one row per (video_id, load_date)
+--    If there are multiple, take the MAX of counters (monotonic metrics).
+src as (
+  select
+    video_id,
+    any_value(channel_id) as channel_id,
+    load_date,
+    max(views)    as views,
+    max(likes)    as likes,
+    max(comments) as comments
+  from src_raw
+  group by video_id, load_date
 ),
 
 with_lag as (
