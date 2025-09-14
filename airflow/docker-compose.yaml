@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  airflow:
+    build: .
+    container_name: youtube-airflow
+    restart: always
+    environment:
+      # Use SequentialExecutor for demo setup (works with SQLite)
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW__CORE__FERNET_KEY}
+      - AIRFLOW__WEBSERVER__SECRET_KEY=${AIRFLOW__WEBSERVER__SECRET_KEY}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GCS_BUCKET=${GCS_BUCKET}
+      - BQ_LOCATION=${BQ_LOCATION}
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./creds:/opt/airflow/keys   # mount your creds folder
+
+    command: >
+      bash -c "
+        airflow db migrate &&
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
+        airflow webserver &
+        airflow scheduler
+      "

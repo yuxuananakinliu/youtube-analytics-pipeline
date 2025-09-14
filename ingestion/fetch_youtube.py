@@ -60,7 +60,10 @@ def prune_empty(obj):
 def run_ingestion(exec_date=None):
     load_dotenv()
     bucket = os.environ["GCS_BUCKET"]
-    date_str = exec_date or datetime.date.today().isoformat()
+
+    # pick up DATE_OVERRIDE from env if caller didn’t pass it
+    exec_date = exec_date or os.environ.get("DATE_OVERRIDE")
+    date_str = exec_date or os.environ.get("DATE_OVERRIDE") or datetime.date.today().isoformat()
     prefix = f"raw/date={date_str}"
 
     yt = youtube_client()

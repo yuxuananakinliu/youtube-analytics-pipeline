@@ -1,14 +1,22 @@
-# env & creds
-.env
-creds/*.json
-*.key
-
-# python
-.venv/
+# Python
 __pycache__/
 *.pyc
+.venv/
+.env
 
-# dbt/airflow caches
-dbt/target/
-dbt/logs/
-docker/airflow/logs/
+# dbt
+target/
+dbt_packages/
+logs/
+
+# Airflow
+airflow/airflow.db
+airflow/airflow-webserver.pid
+airflow/logs/
+airflow/tmp/
+airflow/dags/__pycache__/
+
+# Credentials
+*.json
+creds/
+airflow/keys/

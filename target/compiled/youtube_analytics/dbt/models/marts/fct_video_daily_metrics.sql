@@ -11,6 +11,11 @@ with src_raw as (
     comments
   from `orbital-nuance-471817-n0`.`youtube_stg`.`stg_youtube_video_stats`
   
+    where load_date >= (
+      select date_sub(coalesce(max(load_date), date '1900-01-01'), interval 1 day)
+      from `orbital-nuance-471817-n0`.`youtube_analytics`.`fct_video_daily_metrics`
+    )
+  
 ),
 
 -- 2) Deduplicate: keep one row per (video_id, load_date)

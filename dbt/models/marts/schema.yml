@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: fct_video_daily_metrics
+    description: Daily deltas per video (views/likes/comments)
+    columns:
+      - name: video_id
+        tests:
+          - not_null
+      - name: load_date
+        tests:
+          - not_null
+    tests:
+      # BigQuery-safe uniqueness across two columns
+      - unique:
+          column_name: "concat(video_id, '-', cast(load_date as string))"

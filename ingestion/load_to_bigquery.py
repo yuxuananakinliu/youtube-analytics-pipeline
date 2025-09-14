@@ -11,14 +11,14 @@ PROJECT_ID = os.getenv("GCP_PROJECT_ID")
 BUCKET = os.getenv("GCS_BUCKET")
 BQ_LOCATION = os.getenv("BQ_LOCATION", "US")
 
+EXEC_DATE = os.getenv("DATE_OVERRIDE") or date.today().isoformat()
 DATASET = "youtube_raw"
-TODAY = date.today().isoformat()  # YYYY-MM-DD
 
 # Map each GCS file to a BigQuery raw table
 SOURCES = [
-    (f"gs://{BUCKET}/raw/date={TODAY}/channels.json",   f"{PROJECT_ID}.{DATASET}.channels_raw"),
-    (f"gs://{BUCKET}/raw/date={TODAY}/video_ids.json",  f"{PROJECT_ID}.{DATASET}.video_ids_raw"),
-    (f"gs://{BUCKET}/raw/date={TODAY}/video_stats.json",f"{PROJECT_ID}.{DATASET}.video_stats_raw"),
+    (f"gs://{BUCKET}/raw/date={EXEC_DATE}/channels.json",   f"{PROJECT_ID}.{DATASET}.channels_raw"),
+    (f"gs://{BUCKET}/raw/date={EXEC_DATE}/video_ids.json",  f"{PROJECT_ID}.{DATASET}.video_ids_raw"),
+    (f"gs://{BUCKET}/raw/date={EXEC_DATE}/video_stats.json",f"{PROJECT_ID}.{DATASET}.video_stats_raw"),
 ]
 
 def main():
@@ -35,14 +35,14 @@ def main():
         schema_update_options=[
             bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION,
             bigquery.SchemaUpdateOption.ALLOW_FIELD_RELAXATION,
-        ]
+        ],
     )
 
     for gcs_uri, table_id in SOURCES:
         try:
             print(f"Loading {gcs_uri} → {table_id} ...")
-            load_job = client.load_table_from_uri(gcs_uri, table_id, job_config=job_config)
-            load_job.result()  # wait
+            job = client.load_table_from_uri(gcs_uri, table_id, job_config=job_config)
+            job.result()
             dest = client.get_table(table_id)
             print(f"Loaded {dest.num_rows} total rows in {table_id}")
         except NotFound as e:
