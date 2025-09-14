@@ -2,10 +2,24 @@
 All notable changes to this project are documented here.
 This project follows [Semantic Versioning](https://semver.org/) and “Keep a Changelog”.
 
-## [Unreleased]
-- Airflow DAG to orchestrate ingest → load → dbt.
-- Backfill flag (DATE_OVERRIDE) end-to-end (loader + dbt).
-- CI: lint + dbt compile on PRs.
+## [0.2.0] - 2025-09-14
+### Added
+- **Airflow (local, dockerized)** to orchestrate daily ingestion + dbt:
+  - `airflow/Dockerfile`, `docker-compose.yaml`, `.env` (runtime vars), and `dags/youtube_daily_dag.py`.
+  - Single-container Airflow (webserver+scheduler) with LocalExecutor and Postgres.
+- **Backfill flag support** across ingestion + dbt.
+  - Ingestion honors `DATE_OVERRIDE` (e.g. `DATE_OVERRIDE=2025-09-10`) to pull a specific day from the YouTube API and writes to `gs://<bucket>/raw/date=YYYY-MM-DD/`.
+  - BigQuery loads read that same partition path; dbt models accept `--vars 'load_date_override: 2025-09-10'` (or use the `DATE_OVERRIDE` env) to rebuild only that day.
+
+### Fixed
+- Container start issues:
+  - Invalid/empty Fernet key → documented proper generation.
+  - SQLite + LocalExecutor conflict → switched to Postgres backend in compose.
+- Consistent pathing for service account key inside container.
+
+### Notes
+- **DAG is created _paused by default_**. This repo treats Airflow as a showcase; your recommended day-to-day refresh remains `refresh.bat`.
+- Looker Studio now reflects new daily data after manual/automated runs.
 
 ## [0.1.1] - 2025-09-13
 ### Added
