@@ -1,15 +1,37 @@
 # Changelog
-All notable changes to this project will be documented in this file.
-
-The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
+All notable changes to this project are documented here.
+This project follows [Semantic Versioning](https://semver.org/) and “Keep a Changelog”.
 
 ## [Unreleased]
-- Airflow (Docker) orchestration DAG
-- GitHub Actions nightly job (alternative)
-- dbt model for titles joined into facts (`fct_video_daily_metrics_with_titles`)
-- Backfill utility for demo time series
+- Airflow DAG to orchestrate ingest → load → dbt.
+- Backfill flag (DATE_OVERRIDE) end-to-end (loader + dbt).
+- CI: lint + dbt compile on PRs.
 
-## [1.0.0] - 2025-09-12
+## [0.1.1] - 2025-09-13
+### Added
+- **One-button refresh** flow: GCS ingest → BigQuery raw load → dbt run/test.
+- **Ingestion**: `fetch_youtube.py` pulls channel metadata, recent video ids, and stats; prunes empty structures; uploads NDJSON to `gs://<bucket>/raw/date=YYYY-MM-DD/`. :contentReference[oaicite:4]{index=4}
+- **Loader**: `load_to_bigquery.py` appends the three NDJSON files into `youtube_raw` tables with autodetect + append semantics. :contentReference[oaicite:5]{index=5}
+- **Staging & marts** (dbt): staging views on `youtube_stg`, marts on `youtube_analytics`, including incremental `fct_video_daily_metrics`.
+- **Utilities**:
+  - `fix_video_stats_empty_struct.py` — optional cleaner that rewrites `video_stats_clean.json` with empty dict/list fields removed. :contentReference[oaicite:6]{index=6}
+  - `smoke_upload.py` — sanity NDJSON upload to GCS. :contentReference[oaicite:7]{index=7}
+
+### Changed
+- **dbt schema naming fixed**: ensured `generate_schema_name` macro is loaded so models deploy to `youtube_stg` and `youtube_analytics` exactly (no suffixed datasets). :contentReference[oaicite:0]{index=0}
+- **Raw tables partitioned**: `youtube_raw.{channels_raw, video_ids_raw, video_stats_raw}` are created as **ingestion-time partitioned** to support `_PARTITIONTIME` in staging queries. (Configured via `LoadJobConfig` in the loader.) :contentReference[oaicite:1]{index=1}
+- **Channel set updated**: switched to two high-activity channels (e.g., MrBeast, Kurzgesagt) via `ingestion/channel_list.json` consumed by `fetch_youtube.py`. :contentReference[oaicite:2]{index=2}
+- Repo-local runners (`refresh.bat`, `dbt.bat`) so venv activation isn’t required.
+
+### Fixed
+- **Staging errors**: `_PARTITIONTIME` now resolves because raw tables are partitioned; staging views (`stg_youtube_*`) build cleanly.
+- **Schema drift on channels**: when YouTube adds fields (e.g., `snippet.defaultLanguage`), raw loads can be recreated or configured to allow schema evolution via `schema_update_options`. (See loader for append config.) :contentReference[oaicite:3]{index=3}
+
+### Notes
+- Keep secrets out of git: `.env`, `creds/*.json` are ignored; scripts read from env and local files at runtime.
+
+
+## [0.1.0] - 2025-09-12
 ### Added
 - Python ingestion `fetch_youtube.py` pulling YouTube Data API → GCS (NDJSON)
 - BigQuery raw tables (`channels_raw`, `video_ids_raw`, `video_stats_raw`)
